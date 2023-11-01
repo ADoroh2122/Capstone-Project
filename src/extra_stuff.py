@@ -6,6 +6,7 @@ import plotly.express as px
 from cfbd.rest import ApiException
 from dotenv import load_dotenv
 from os import getenv
+from PIL import Image
 
 st.set_page_config(
     page_icon='📖',
@@ -13,7 +14,7 @@ st.set_page_config(
 )
 page = st.sidebar.selectbox(
     'Page',
-    ('Overall Record', 'Visualizations', 'Matchup Records')
+    ('Homepage','Overall Record', 'Visualizations', 'Matchup Records')
 )
 
 configuration = cfbd.Configuration()
@@ -22,8 +23,15 @@ configuration.api_key_prefix['Authorization'] = 'Bearer'
 api_instance = cfbd.GamesApi(cfbd.ApiClient(configuration))
 api_instance2 = cfbd.TeamsApi(cfbd.ApiClient(configuration))
 
-st.title("Welcome to Your Favorite College Football Team's Homepage!")
+if page == 'Homepage':
+    st.title("Welcome to Your Favorite College Football Team Experience!")
+    st.write("""Through this application, you may insert your favorite College D1 Football Team in the dropbox below.
+                 Once your favorite team has been selected, navigate over to the dropdown section
+                 to review your team's overall win/loss/tie record, visualizations, and your team's overall record with matchup information against your arch rival.
+                 """)
+    st.image('https://external-preview.redd.it/2023-24-division-one-college-football-map-v0-SJYGGi44-kGg8awJ45nJunQTsDvfPynyPpsNu8l2hBs.jpg?auto=webp&s=ff33a2a5c678f7575a823d76eac8bd2849b8fadc', caption=None, width=None, use_column_width=None, clamp=False, channels='RGB', output_format='auto')
 fav_team = st.text_input('Your favorite team: ')
+
 if fav_team:
     try:
         records = api_instance.get_team_records(team = f'{fav_team}')
@@ -63,9 +71,13 @@ if fav_team:
         st.error('Please make sure to write the correct spelling of your team without the institution at the end. For example, Michigan State(correct), Michigan State University(incorrect).')
 
 if page == 'Overall Record':
-
+    team = df['team_id'][0]
+    st.image(f'https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/{team}.png&h=200&w=200', caption=None, width=None, use_column_width=None, clamp=False, channels='RGB', output_format='auto')
     if st.button("Come on, let's see my data"):
         df
+        
+        team = df['team_id'][0]
+        st.write(f"For current information regarding your favorite team, please use this link: https://www.espn.com/college-football/team/_/id/{team}")
 
 if page == 'Visualizations':
     if st.checkbox("Cool stuff, now let's see some visualizations"):
@@ -101,10 +113,11 @@ if page == 'Visualizations':
 
     
 if page == 'Matchup Records':
-    #if st.checkbox("How about we take a look at some matchups"):
     team2 = st.text_input("Please choose a second team: ")
+    st.image(f'https://t4.ftcdn.net/jpg/00/97/44/57/360_F_97445702_faYBL0ObQgGxnUOahUiIzY1w2mnJ2g4Y.jpg', caption=None, width=None, use_column_width=None, clamp=False, channels='RGB', output_format='auto')
     if team2:
         try:
+
             api_response = api_instance2.get_team_matchup(fav_team, team2)
             matchup = pd.DataFrame(api_response.to_dict()['games'])
             del matchup['week']
@@ -132,6 +145,8 @@ if page == 'Matchup Records':
         except:
             st.error('Please make sure to write the correct spelling of your team without the institution at the end. For example, Michigan State(correct), Michigan State University(incorrect).')
 
+        #st.image(f'https://t4.ftcdn.net/jpg/00/97/44/57/360_F_97445702_faYBL0ObQgGxnUOahUiIzY1w2mnJ2g4Y.jpg', caption=None, width=None, use_column_width=None, clamp=False, channels='RGB', output_format='auto')
+        
 # Connecting to Elephant SQL
 
         #connection = 'postgresql://lbgowpbc:dNYHpRnfDLZbvt4iBvVhp11ziizGwLlI@castor.db.elephantsql.com/lbgowpbc'
