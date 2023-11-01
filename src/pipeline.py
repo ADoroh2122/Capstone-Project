@@ -30,7 +30,7 @@ if page == 'Homepage':
                  to review your team's overall win/loss/tie record, visualizations, and your team's overall record with matchup information against your arch rival.
                  """)
     st.image('https://external-preview.redd.it/2023-24-division-one-college-football-map-v0-SJYGGi44-kGg8awJ45nJunQTsDvfPynyPpsNu8l2hBs.jpg?auto=webp&s=ff33a2a5c678f7575a823d76eac8bd2849b8fadc', caption=None, width=None, use_column_width=None, clamp=False, channels='RGB', output_format='auto')
-fav_team = st.text_input('Your favorite team: ')
+fav_team = st.text_input('Your favorite team: ').lower()
 
 if fav_team:
     try:
@@ -68,7 +68,7 @@ if fav_team:
         df['team_id'] = df['team_id'].astype(str).str.replace(',', '', regex=True)
     
     except:
-        st.error('Please make sure to write the correct spelling of your team without the institution at the end. For example, Michigan State(correct), Michigan State University(incorrect).')
+        st.error('Please make sure to write the correct spelling of your team as well as without the institution at the end. For example, Michigan State(correct), Michigan State University(incorrect).')
 
 if page == 'Overall Record':
     team = df['team_id'][0]
@@ -76,8 +76,9 @@ if page == 'Overall Record':
     if st.button("Come on, let's see my data"):
         df
         
-        team = df['team_id'][0]
+        #team = df['team_id'][0]
         st.write(f"For current information regarding your favorite team, please use this link: https://www.espn.com/college-football/team/_/id/{team}")
+    
 
 if page == 'Visualizations':
     if st.checkbox("Cool stuff, now let's see some visualizations"):
@@ -113,11 +114,10 @@ if page == 'Visualizations':
 
     
 if page == 'Matchup Records':
-    team2 = st.text_input("Please choose a second team: ")
+    team2 = st.text_input("Please choose a second team: ").lower()
     st.image(f'https://t4.ftcdn.net/jpg/00/97/44/57/360_F_97445702_faYBL0ObQgGxnUOahUiIzY1w2mnJ2g4Y.jpg', caption=None, width=None, use_column_width=None, clamp=False, channels='RGB', output_format='auto')
     if team2:
         try:
-
             api_response = api_instance2.get_team_matchup(fav_team, team2)
             matchup = pd.DataFrame(api_response.to_dict()['games'])
             del matchup['week']
@@ -133,9 +133,9 @@ if page == 'Matchup Records':
             tie_count = 0
 
             for index, row in matchup.iterrows():
-                if row['winner'] == f'{fav_team}':
+                if row['winner'].lower() == f'{fav_team}':
                     win_count += 1
-                elif row['winner'] == f'{team2}':
+                elif row['winner'].lower() == f'{team2}':
                     loss_count += 1
                 elif row['winner'] == 'Tie Game':
                     tie_count += 1
@@ -143,13 +143,12 @@ if page == 'Matchup Records':
             matchup
 
         except:
-            st.error('Please make sure to write the correct spelling of your team without the institution at the end. For example, Michigan State(correct), Michigan State University(incorrect).')
+            st.error('Please make sure to write the correct spelling of your team as well as without the institution at the end. For example, Michigan State(correct), Michigan State University(incorrect).')
 
         #st.image(f'https://t4.ftcdn.net/jpg/00/97/44/57/360_F_97445702_faYBL0ObQgGxnUOahUiIzY1w2mnJ2g4Y.jpg', caption=None, width=None, use_column_width=None, clamp=False, channels='RGB', output_format='auto')
         
 # Connecting to Elephant SQL
 
-        #connection = 'postgresql://lbgowpbc:dNYHpRnfDLZbvt4iBvVhp11ziizGwLlI@castor.db.elephantsql.com/lbgowpbc'
         load_dotenv()
         sql_url = getenv('SQL_URL')
 
