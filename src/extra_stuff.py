@@ -6,7 +6,6 @@ import plotly.express as px
 from cfbd.rest import ApiException
 from dotenv import load_dotenv
 from os import getenv
-from PIL import Image
 
 st.set_page_config(
     page_icon='📖',
@@ -25,13 +24,13 @@ api_instance2 = cfbd.TeamsApi(cfbd.ApiClient(configuration))
 
 if page == 'Homepage':
     st.title("Welcome to Your Favorite College Football Team Experience!")
-    st.write("""Through this application, you may insert your favorite College D1 Football Team in the dropbox below.
-                 Once your favorite team has been selected, navigate over to the dropdown section
-                 to review your team's overall win/loss/tie record, visualizations, and your team's overall record with matchup information against your arch rival.
+    st.write("""Through this application, you can insert your favorite D1 College Football Team in the searchbox below.
+                 Once your favorite team has been entered, navigate over to the dropdown section
+                 to review your team's overall win/loss/tie record, visualizations using the overall record, and your team's matchup record against the team of your choice.
                  """)
     st.image('https://external-preview.redd.it/2023-24-division-one-college-football-map-v0-SJYGGi44-kGg8awJ45nJunQTsDvfPynyPpsNu8l2hBs.jpg?auto=webp&s=ff33a2a5c678f7575a823d76eac8bd2849b8fadc', caption=None, width=None, use_column_width=None, clamp=False, channels='RGB', output_format='auto')
 fav_team = st.text_input('Your favorite team: ').lower()
-
+    
 if fav_team:
     try:
         records = api_instance.get_team_records(team = f'{fav_team}')
@@ -71,22 +70,20 @@ if fav_team:
         st.error('Please make sure to write the correct spelling of your team as well as without the institution at the end. For example, Michigan State(correct), Michigan State University(incorrect).')
 
 if page == 'Overall Record':
-    team = df['team_id'][0]
-    st.image(f'https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/{team}.png&h=200&w=200', caption=None, width=None, use_column_width=None, clamp=False, channels='RGB', output_format='auto')
     if st.button("Come on, let's see my data"):
+        teams = df['team_id'][0]
+        st.image(f'https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/{teams}.png&h=200&w=200', caption=None, width=None, use_column_width=None, clamp=False, channels='RGB', output_format='auto')
         df
-        
-        #team = df['team_id'][0]
-        st.write(f"For current information regarding your favorite team, please use this link: https://www.espn.com/college-football/team/_/id/{team}")
+        st.write(f"For current information regarding your favorite team, please use this link: https://www.espn.com/college-football/team/_/id/{teams}")
     
 
 if page == 'Visualizations':
     if st.checkbox("Cool stuff, now let's see some visualizations"):
-        vis_to_use = ['scatterplot', 'histogram', 'bar chart']
+        vis_to_use = ['scatterplot', 'bar chart']
         type_vis = st.selectbox('Select the type of visualization you would like to see:', options=vis_to_use)
 
         if type_vis == 'scatterplot':
-            answer = st.selectbox('Select a Column to Visualize on the X-axis:', options= sorted(list(df.columns)))
+            answer = st.selectbox('Select a Column to Visualize on the X-axis:', options= ['year', 'conference'])
             answer2 = st.selectbox('Select a Column to Visualize on the Y-axis:', options = sorted(list(df.columns)))
             if answer and answer2:
                 try:
@@ -96,7 +93,7 @@ if page == 'Visualizations':
                     print("Error visualizing those combination of columns")
 
         if type_vis == 'bar chart':
-            answer = st.selectbox('Select a Column to Visualize on the X-axis:', options = sorted(list(df.columns)))
+            answer = st.selectbox('Select a Column to Visualize on the X-axis:', options = ['year', 'conference'])
             answer2 = st.selectbox('Select a Column to Visualize on the Y-axis:', options = sorted(list(df.columns)))
             if answer and answer2:
                 try:
@@ -104,18 +101,10 @@ if page == 'Visualizations':
                 except BaseException:
                     print("Error visualizing those combination of columns")
 
-        if type_vis == 'histogram':
-            answer = st.selectbox('Select a Column to Visualize on the X-axis:', options = sorted(list(df.columns)))
-            if answer:
-                try:
-                    st.plotly_chart(px.histogram(df, x=answer, use_container_width=True))
-                except BaseException:
-                        print("Error visualizing those combination of columns")
 
-    
 if page == 'Matchup Records':
     team2 = st.text_input("Please choose a second team: ").lower()
-    st.image(f'https://t4.ftcdn.net/jpg/00/97/44/57/360_F_97445702_faYBL0ObQgGxnUOahUiIzY1w2mnJ2g4Y.jpg', caption=None, width=None, use_column_width=None, clamp=False, channels='RGB', output_format='auto')
+    st.image(f'https://t4.ftcdn.net/jpg/00/97/44/57/360_F_97445702_faYBL0ObQgGxnUOahUiIzY1w2mnJ2g4Y.jpg', caption=None, width=None, use_column_width=None, clamp=False, channels='RGB', output_format='auto')    
     if team2:
         try:
             api_response = api_instance2.get_team_matchup(fav_team, team2)
