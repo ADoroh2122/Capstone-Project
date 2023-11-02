@@ -6,6 +6,7 @@ cachetools==5.3.2
 category-encoders==2.6.3
 certifi==2023.7.22
 charset-normalizer==3.3.1
+cfbd
 click==8.1.7
 colorama==0.4.6
 comm==0.1.4
