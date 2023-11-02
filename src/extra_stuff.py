@@ -23,7 +23,7 @@ api_instance = cfbd.GamesApi(cfbd.ApiClient(configuration))
 api_instance2 = cfbd.TeamsApi(cfbd.ApiClient(configuration))
 
 if page == 'Homepage':
-    st.title("Welcome to Your Favorite College Football Team Experience!")
+    st.title("Welcome to Your Favorite D1 College Football Team Experience!")
     st.write("""Through this application, you can insert your favorite D1 College Football Team in the searchbox below.
                  Once your favorite team has been entered, navigate over to the dropdown section
                  to review your team's overall win/loss/tie record, visualizations using the overall record, and your team's matchup record against the team of your choice.
