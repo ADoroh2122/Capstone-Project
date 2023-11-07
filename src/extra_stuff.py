@@ -17,7 +17,7 @@ page = st.sidebar.selectbox(
 )
 
 configuration = cfbd.Configuration()
-configuration.api_key['Authorization'] = st.secrets["api_key"]
+configuration.api_key['Authorization'] = 'XscFL3JKpF/UVy2fexpow+vZ/o6rlKfxtnQdN70yVY89w1aTyXYDO+o641kfK8zy'
 configuration.api_key_prefix['Authorization'] = 'Bearer'
 api_instance = cfbd.GamesApi(cfbd.ApiClient(configuration))
 api_instance2 = cfbd.TeamsApi(cfbd.ApiClient(configuration))
